@@ -1,0 +1,74 @@
+# To-Do List Application
+
+### Steps
+
+1. **Read Documentation on SQLite3**
+   - Understand the basics of SQLite3, its features, and its use cases.
+   - Familiarize yourself with SQL commands for creating, reading, updating, and deleting records.
+   
+    ____________
+   | SQLite3    |
+   |------------|
+   | - Basics   |
+   | - Features |
+   | - SQL CMDs |
+   |____________|
+
+2. **Read Documentation on Django**
+   - Learn about Django’s design.
+   - Explore Django's built-in features for databases.
+   
+    ___________
+   | Django    |
+   |-----------|
+   | - MVC     |
+   | - Models  |
+   | - Views   |
+   | - Templates|
+   | - ORM     |
+   |___________|
+
+3. **Read Documentation on Implementing the Two Together**
+   - Integrate SQLite3 with Django.
+   - Set up the Django project and configure the database.
+   
+    ________________
+   | Integration    |
+   |----------------|
+   | - Setup Django |
+   | - Config DB    |
+   | - Test Conn    |
+   |________________|
+
+4. **Test Integration of Classes with Database**
+   - Create Django models representing customers and vehicles.
+   - Implement operations.
+   - Ensure models interact correctly with SQLite3.
+   
+    ____________
+   | Testing    |
+   |------------|
+   | - Models   |
+   | - Operation|
+   | - DB Conn  |
+   | -...       |
+   | -Profit    |
+   |____________|
+
+5. **Test Search**
+   - Implement search functionality within the to-do list.
+   - Ensure search queries retrieve correct data from the database.
+   
+    _________
+   | Search  |
+   |---------|
+   | - Implement|
+   | - Test   |
+   | - Verify |
+   |_________|
+
+### Overview of to-do-list
+1. Create a new Django project.
+2. Configure SQLite3 as the database.
+3. Follow the steps above to build and test your to-do list application.
+
