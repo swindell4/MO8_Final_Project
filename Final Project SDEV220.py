@@ -8,11 +8,15 @@ repairList = [] #Making a list to display back to the user at the end, can be ch
 class RedirectGUI:
     def __init__(type):
         type.window = Tk()
-        type.window.title("Redirect")
-        type.window.geometry('1150x300')
-        type.window.minsize(1150, 300)
+        type.window.title("Redirect") #This is the title of the window
+        type.window.geometry('1150x300') #This is the size the window is set to
+        type.window.minsize(1150, 300) #Thi is the minimum size the window can be adjusted to, can become larger
 
-        type.whatType = Label(type.window, text = "What Information Would You Like To Input?", height = 1, width = 40, bd =5, font=('Times New Roman', 18)) #Text saying what to do
+        #type is just saying that it is referencing the whole class, label is for typing text to show to the user, Button is for buttons, the name after type. does not matter entirely it is just there to make it easier to know what is what.
+        #The type.any name.grid is telling it where to put what it is referencing for example it will put the label in column one row one
+        #Most of these comments apply to the later GUI classes
+
+        type.whatType = Label (type.window '''makes window''', text = "What Information Would You Like To Input?", height = 1, width = 40, bd =5, font=('Times New Roman', 18) ) #Text saying what to do
         type.whatType.grid(padx=30, pady=15, column = 1, row = 1, sticky = 'EW')
 
         type.customer = Button(type.window, state = 'normal', text = "Customer", bd =5, font=('Times New Roman', 18), command = lambda: [ type.window.destroy(), CustomerGUI()])
@@ -24,7 +28,7 @@ class RedirectGUI:
         type.repairs = Button(type.window, state = 'normal', text = "Repairs", bd =5, font=('Times New Roman', 18), command = lambda: [ type.window.destroy(), RepairsGUI()])
         type.repairs.grid(padx=30, pady=15, column = 4, row = 1, sticky = 'EW')
 
-        type.window.mainloop()
+        type.window.mainloop() #This is what makes the window run VERY IMPORTANT DO NOT REMOVE, if you need to make a new GUI follow this main guideline and it should work
 
 
 class CustomerGUI:
@@ -124,5 +128,7 @@ class RepairsGUI:
         type.window.mainloop()
 
 
-RedirectGUI()
+RedirectGUI() #This is to run the first GUI that sends the user to the next GUI as needed 
+print(customerList) #These lists are here just to make sure the inputs are working properly
 print(vehicleList)
+print(repairList)
