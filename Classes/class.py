@@ -143,7 +143,7 @@ class RepairMaintenanceOptions:
 
     def __init__(self) -> None:
 
-        self.options = []
+        pass
 
     #add options that are not there just in case
     def add_option(self, name: str, description: str, cost: float) -> None:
@@ -152,8 +152,7 @@ class RepairMaintenanceOptions:
             print(f"Option '{name}' already exists. Use update_option_cost to change the cost.")
 
         else:
-            self.repair_maintenance_options[name] = {"Description": description, "Cost": cost}
-            self.options.append({"name": name, "description": description, "cost": cost})
+            self.repair_maintenance_options.append({"name": name, "description": description, "cost": cost})
 
     #changes the cost of an option
     def update_option_cost(self, name: str, new_cost: float) -> None:
@@ -162,7 +161,7 @@ class RepairMaintenanceOptions:
 
             self.repair_maintenance_options[name]["Cost"] = new_cost
 
-            for option in self.options:
+            for option in self.repair_mainenance_options:
 
                 if option["name"] == name:
                     option["cost"] = new_cost
