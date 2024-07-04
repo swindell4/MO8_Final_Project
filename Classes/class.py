@@ -161,7 +161,7 @@ class RepairMaintenanceOptions:
 
             self.repair_maintenance_options[name]["Cost"] = new_cost
 
-            for option in self.repair_mainenance_options:
+            for option in self.repair_maintenance_options:
 
                 if option["name"] == name:
                     option["cost"] = new_cost
@@ -178,6 +178,9 @@ class RepairMaintenanceOptions:
             print(f"Name: {name}")
             print(f"  Description: {details['Description']}")
             print(f"  Cost: ${details['Cost']:.2f}\n")#format two decimals for USD
+    
+    def returnOptions(self):
+        return repair_maintenance_options
 
 '''=======================
 UI Class Information
