@@ -1,6 +1,11 @@
+#Made by David Matz 
+
 '''=======================
 Vehicle Class Information
 ======================='''
+#This file takes information from the GUI and creates instances of inputted information. 
+
+import GUI 
 
 class Vehicle:
     def __init__(self, make: str, model: str, year: int) -> None:
@@ -143,7 +148,7 @@ class RepairMaintenanceOptions:
 
     def __init__(self) -> None:
 
-        self.options = []
+        pass
 
     #add options that are not there just in case
     def add_option(self, name: str, description: str, cost: float) -> None:
@@ -152,8 +157,7 @@ class RepairMaintenanceOptions:
             print(f"Option '{name}' already exists. Use update_option_cost to change the cost.")
 
         else:
-            self.repair_maintenance_options[name] = {"Description": description, "Cost": cost}
-            self.options.append({"name": name, "description": description, "cost": cost})
+            self.repair_maintenance_options.append({"name": name, "description": description, "cost": cost})
 
     #changes the cost of an option
     def update_option_cost(self, name: str, new_cost: float) -> None:
@@ -162,7 +166,7 @@ class RepairMaintenanceOptions:
 
             self.repair_maintenance_options[name]["Cost"] = new_cost
 
-            for option in self.options:
+            for option in self.repair_maintenance_options:
 
                 if option["name"] == name:
                     option["cost"] = new_cost
@@ -179,6 +183,9 @@ class RepairMaintenanceOptions:
             print(f"Name: {name}")
             print(f"  Description: {details['Description']}")
             print(f"  Cost: ${details['Cost']:.2f}\n")#format two decimals for USD
+    
+    def returnOptions(self):
+        return repair_maintenance_options
 
 '''=======================
 UI Class Information
