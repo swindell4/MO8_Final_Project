@@ -229,9 +229,7 @@ def populate_repairs_for_vehicle(vehicle_id):
 
 def refresh_data():
     populate_customers_listbox()
-    populate_repairs_for_vehicle()
     populate_repairs_listbox()
-    populate_vehicles_listbox()
 
 '''=======================
 Tabs in program window
