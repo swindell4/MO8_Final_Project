@@ -39,11 +39,11 @@ def create_table():
             cost REAL NOT NULL
     )""")
     
-    # Commit the command
-    conn.commit()
-
     #add repair options to database
     insert_repair_options(conn,c)
+
+    # Commit the command
+    conn.commit()
 
     # Close the connection
     conn.close()
