@@ -1,10 +1,14 @@
+#Made by David Matz 
+
 '''=======================
 Vehicle Class Information
 ======================='''
+#This file takes information from the GUI and creates instances of inputted information. 
+
+import GUI_v3
 
 class Vehicle:
-    def __init__(self, make: str, model: str, year: int) -> None:
-
+    def __init__(self, id: int, make: str, model: str, year: int) -> None:
         self.make = make
         self.model = model
         self.year = year
@@ -23,12 +27,11 @@ Customer Class Information
 ======================='''
 
 class Customer:
-    def __init__(self, id: int, name: str, phone: str) -> None:
-
+    def __init__(self,id: int, name: str, phone: str, vehicle: str) -> None:
         self.id = id
         self.name = name
         self.phone = phone
-        self.vehicles = []
+        self.vehicles = [vehicle]
         self.spent = 0.0
         self.history = []
 
@@ -152,7 +155,7 @@ class RepairMaintenanceOptions:
             print(f"Option '{name}' already exists. Use update_option_cost to change the cost.")
 
         else:
-            self.repair_maintenance_options.append({"name": name, "description": description, "cost": cost})
+            self.repair_maintenance_options[name] = {"Description": description, "Cost": cost}
 
     #changes the cost of an option
     def update_option_cost(self, name: str, new_cost: float) -> None:
@@ -180,7 +183,7 @@ class RepairMaintenanceOptions:
             print(f"  Cost: ${details['Cost']:.2f}\n")#format two decimals for USD
     
     def returnOptions(self):
-        return repair_maintenance_options
+        return self.repair_maintenance_options
 
 '''=======================
 UI Class Information
