@@ -97,23 +97,25 @@ def add_service():
     # Connect to the database
     conn = sqlite3.connect('customer_management.db')
     c = conn.cursor()
+    repair_cost = 0
 
     def insert_service() -> None:
 
         #retrieve repair cost
-        c.execute("SELECT cost FROM repairs WHERE id = ?", (repair_id,))
+        c.execute("SELECT cost FROM repairs WHERE id = ?", (int(repair_id),))
         repair_cost = c.fetchone()[0]
+        print(repair_cost)
         
         #retieve and add to vihicle history
-        c.execute("SELECT repair_history FROM vehicle WHERE id = ?", (vehicle_id,))
+        c.execute("SELECT maintenance FROM vehicle WHERE id = ?", (int(vehicle_id),))
         repair_history = c.fetchone()[0]
         new_repair_history = (repair_history or "") + f"{repair_id} "
-        c.execute("UPDATE vehicle SET repair_history = ? WHERE id = ?", (new_repair_history, vehicle_id))
+        c.execute("UPDATE vehicle SET maintenance = ? WHERE id = ?", (new_repair_history, int(vehicle_id)))
 
         #Update money spent by customer in database
         c.execute("SELECT id FROM customer_management WHERE vehicles LIKE ?", (f"%{vehicle_id}%",))
         customer_id = c.fetchone()[0]
-        c.execute("UPDATE customer_management SET spent = spent + ? WHERE id = ?", (repair_cost, customer_id))
+        c.execute("UPDATE customer_management SET spent = spent + ? WHERE id = ?", (float(repair_cost), customer_id))
 
     insert_service()
 
@@ -123,7 +125,7 @@ def add_service():
 
     # Update the info display
     info_display.insert(tk.END, f"Added repair ID {repair_id} to vehicle ID {vehicle_id}\n")
-    info_display.insert(tk.END, f"Updated customer ID {customer_id} with repair cost {repair_cost}\n")
+    info_display.insert(tk.END, f"Updated vehicle ID {vehicle_id} with repair cost ${repair_cost} \n")
     info_display.insert(tk.END, "-"*30 + "\n")
 
     # Clear the input fields
@@ -145,7 +147,7 @@ def populate_repairs_listbox():
 
     # Insert repairs into the listbox
     for repair in repairs:
-        repairs_listbox.insert(tk.END, f"{repair[0]}: {repair[1]} - {repair[2]}")
+        repairs_listbox.insert(tk.END, f"{repair[0]} : {repair[1]} - {repair[2]}")
 
     # Close the connection
     conn.close()
@@ -162,7 +164,7 @@ def populate_customers_listbox():
 
     # Insert customers into the listbox
     for customer in customers:
-        customers_listbox.insert(tk.END, f"{customer[0]}: {customer[1]} - {customer[2]}")
+        customers_listbox.insert(tk.END, f"{customer[0]} : {customer[1]} - {customer[2]}")
 
     # Close the connection
     conn.close()
@@ -171,39 +173,41 @@ def populate_vehicles_listbox(customer_id):
     # Connect to the database
     conn = sqlite3.connect('customer_management.db')
     c = conn.cursor()
+    print(customer_id)
 
-    # Retrieve vehicles associated with the customer
-    c.execute("""
-        SELECT id, make, model, year 
-        FROM vehicle 
-        WHERE id IN (SELECT vehicles FROM customer_management WHERE id = ?)
-    """, (customer_id,))
-    vehicles = c.fetchall()
+    #query1 = f"SELECT vehicles FROM {customer_management} WHERE id = ?"
+    #query2 = f"SELECT * FROM {vehicle} WHERE id = ?"
 
-    # Clear the vehicles listbox
-    vehicles_listbox.delete(0, tk.END)
+    try:
+        #execute the query to get related key
+        c.execute(f"SELECT vehicles FROM customer_management WHERE id = ?",(int(customer_id),))
+        vehicle_id = c.fetchone()
+        print(vehicle_id)
 
-    # Debugging: Print retrieved vehicles
-    print(f"Vehicles retrieved for customer {customer_id}: {vehicles}")
+        if vehicle_id:
+            vehicle_id = vehicle_id[0] #extract vehicle key
 
-    # Insert vehicles into the listbox
-    if vehicles:
-        for vehicle in vehicles:
-            vehicles_listbox.insert(tk.END, f"{vehicle[0]}: {vehicle[1]} - {vehicle[2]} - {vehicle[3]}")
-    else:#debug info
-        print(f"No vehicles found for customer {customer_id}")
-        c.execute(f"SELECT * FROM {'vehicle'}")
-        entries = c.fetchall()
-        print(f"Entries in table '{'vehicle'}':")
-        for entry in entries:
-            print(entry)
-        c.execute(f"SELECT * FROM {'customer_management'}")
-        entries = c.fetchall()
-        print(f"Entries in table '{'customer_management'}':")
-        for entry in entries:
-            print(entry)
-    # Close the connection
-    conn.close()
+            #use key to search vehicle table
+            c.execute(f"SELECT * FROM vehicle WHERE id = ?", (int(vehicle_id),))
+            result = c.fetchone()
+
+            #check if a result was found
+            if result:
+                print("Record found:", result)
+                vehicles_listbox.delete(0, tk.END)
+                vehicles_listbox.insert('end',result)
+            else:
+                print("No matching record found")
+        else:
+            print("No vehicle found in customer data")
+
+    #print sqlite3 error
+    except sqlite3.Error as e:
+        print("SQL ERROR: ",e)
+    
+    #make sure connection closed
+    finally:
+        conn.close()
 
 def populate_repairs_for_vehicle(vehicle_id):
     # Connect to the database
@@ -211,7 +215,7 @@ def populate_repairs_for_vehicle(vehicle_id):
     c = conn.cursor()
 
     # Retrieve the repair history for the vehicle
-    c.execute("SELECT repair_history FROM vehicle WHERE id = ?", (vehicle_id,))
+    c.execute("SELECT maintenance FROM vehicle WHERE id = ?", (int(vehicle_id),))
     repair_history = c.fetchone()[0]
 
     # Clear the repairs listbox
@@ -219,16 +223,22 @@ def populate_repairs_for_vehicle(vehicle_id):
 
     if repair_history:
         repair_ids = repair_history.split()
-        for repair_id in repair_ids:
-            c.execute("SELECT id, name, description FROM repairs WHERE id = ?", (repair_id,))
-            repair = c.fetchone()
-            repairs_for_vehicle_listbox.insert(tk.END, f"{repair[0]}: {repair[1]} - {repair[2]}")
+        try:
+
+            for repair_id in repair_ids:
+                c.execute("SELECT id, name, description FROM repairs WHERE id = ?", (repair_id,))
+                repair = c.fetchone()
+                repairs_for_vehicle_listbox.insert(tk.END, f"{repair[0]} : {repair[1]} - {repair[2]}")
+        except:
+            print("nope")
 
     # Close the connection
     conn.close()
 
 def refresh_data():
+    customers_listbox.delete(0,tk.END)
     populate_customers_listbox()
+    repairs_listbox.delete(0, tk.END)
     populate_repairs_listbox()
 
 '''=======================
@@ -256,6 +266,7 @@ def create_new_customer_tab(notebook):
     global phone_entry
     phone_entry = tk.Entry(new_customer_frame)
     phone_entry.grid(row=2, column=1, padx=10, pady=5)
+    tk.Label(new_customer_frame, text="XXX-XXX-XXXX").grid(row=2, column=2, padx=10, pady=5)
 
     # Create and place the text fields for vehicle information
     tk.Label(new_customer_frame, text="Vehicle Make:").grid(row=3, column=0, padx=10, pady=5)
@@ -367,14 +378,16 @@ def on_customer_select(event):
 
 #when the vehicle is selected
 def on_vehicle_select(event):
-    # Get selected vehicle
     selected_vehicle = vehicles_listbox.curselection()
-    if not selected_vehicle:
-        return
-    vehicle_id = vehicles_listbox.get(selected_vehicle).split()[0]
-
-    # Populate repairs for the selected vehicle
-    populate_repairs_for_vehicle(vehicle_id)
+    if selected_vehicle:
+        vehicle_data = vehicles_listbox.get(selected_vehicle)
+        if isinstance(vehicle_data, tuple):
+            vehicle_data = vehicle_data[0]  # Get the first element of the tuple if it is a tuple
+        if isinstance(vehicle_data, int):
+            vehicle_id = vehicle_data  # Directly use vehicle_data if it is an integer
+        else:
+            vehicle_id = vehicle_data.split()[0]  # Otherwise, assume it's a string and split to get vehicle_id
+        populate_repairs_for_vehicle(vehicle_id)
 
 #display total money spent on customer view
 def display_total_spent(customer_id):
