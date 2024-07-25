@@ -40,7 +40,10 @@ def create_table():
     )""")
     
     #add repair options to database
-    insert_repair_options(conn,c)
+    c.execute("SELECT COUNT(*) FROM repairs")
+    count = c.fetchone()[0]
+    if count == 0:
+        insert_repair_options(conn,c)
 
     # Commit the command
     conn.commit()

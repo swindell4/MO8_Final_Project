@@ -117,16 +117,21 @@ def add_service():
         customer_id = c.fetchone()[0]
         c.execute("UPDATE customer_management SET spent = spent + ? WHERE id = ?", (float(repair_cost), customer_id))
 
+        # Update the info display
+        info_display.insert(tk.END, f"Added repair ID {repair_id} to vehicle ID {vehicle_id}\n")
+        info_display.insert(tk.END, f"Updated vehicle ID {vehicle_id} with repair cost ${repair_cost} \n")
+        info_display.insert(tk.END, "-"*30 + "\n")
+        print(repair_cost)
+
     insert_service()
+
+    print(repair_cost)
 
     # Commit changes and close the connection
     conn.commit()
     conn.close()
 
-    # Update the info display
-    info_display.insert(tk.END, f"Added repair ID {repair_id} to vehicle ID {vehicle_id}\n")
-    info_display.insert(tk.END, f"Updated vehicle ID {vehicle_id} with repair cost ${repair_cost} \n")
-    info_display.insert(tk.END, "-"*30 + "\n")
+    
 
     # Clear the input fields
     vehicle_id_entry.delete(0, tk.END)
@@ -142,12 +147,12 @@ def populate_repairs_listbox():
     c = conn.cursor()
 
     # Retrieve all repairs
-    c.execute("SELECT id, name, description FROM repairs")
+    c.execute("SELECT id, name, description, cost FROM repairs")
     repairs = c.fetchall()
 
     # Insert repairs into the listbox
     for repair in repairs:
-        repairs_listbox.insert(tk.END, f"{repair[0]} : {repair[1]} - {repair[2]}")
+        repairs_listbox.insert(tk.END, f"{repair[0]} : {repair[1]} - {repair[2]} - {repair[3]}")
 
     # Close the connection
     conn.close()
@@ -226,9 +231,9 @@ def populate_repairs_for_vehicle(vehicle_id):
         try:
 
             for repair_id in repair_ids:
-                c.execute("SELECT id, name, description FROM repairs WHERE id = ?", (repair_id,))
+                c.execute("SELECT id, name, description, cost FROM repairs WHERE id = ?", (repair_id,))
                 repair = c.fetchone()
-                repairs_for_vehicle_listbox.insert(tk.END, f"{repair[0]} : {repair[1]} - {repair[2]}")
+                repairs_for_vehicle_listbox.insert(tk.END, f"{repair[0]} : {repair[1]} - {repair[2]} - {repair[3]}")
         except:
             print("nope")
 
@@ -236,6 +241,7 @@ def populate_repairs_for_vehicle(vehicle_id):
     conn.close()
 
 def refresh_data():
+
     customers_listbox.delete(0,tk.END)
     populate_customers_listbox()
     repairs_listbox.delete(0, tk.END)
@@ -376,17 +382,25 @@ def on_customer_select(event):
     # Display total spent by the customer
     display_total_spent(customer_id)
 
+    # Clear the repairs listbox
+    repairs_for_vehicle_listbox.delete(0, tk.END)
+
 #when the vehicle is selected
 def on_vehicle_select(event):
     selected_vehicle = vehicles_listbox.curselection()
+
     if selected_vehicle:
         vehicle_data = vehicles_listbox.get(selected_vehicle)
+
         if isinstance(vehicle_data, tuple):
             vehicle_data = vehicle_data[0]  # Get the first element of the tuple if it is a tuple
+        
         if isinstance(vehicle_data, int):
             vehicle_id = vehicle_data  # Directly use vehicle_data if it is an integer
+        
         else:
             vehicle_id = vehicle_data.split()[0]  # Otherwise, assume it's a string and split to get vehicle_id
+        
         populate_repairs_for_vehicle(vehicle_id)
 
 #display total money spent on customer view
